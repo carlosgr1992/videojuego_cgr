@@ -1,10 +1,15 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
+import 'game/JuegoCarlos.dart';
+
 void main() {
 
-  final game = FlameGame();
-  runApp(GameWidget(game: game));
-  
+  runApp(
+    const GameWidget<JuegoCarlos>.controlled(
+      gameFactory: JuegoCarlos.new,
+    ),
+  );
+
 }
 
