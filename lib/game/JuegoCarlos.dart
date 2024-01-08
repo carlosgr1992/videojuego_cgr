@@ -8,7 +8,7 @@ class JuegoCarlos extends FlameGame{
 
   final world = World();
   late final CameraComponent cameraComponent;
-  late EmberPlayer _player1;
+  late EmberPlayer _player1, _player2;
 
   @override
   Future<void> onLoad() async {
@@ -27,10 +27,11 @@ class JuegoCarlos extends FlameGame{
 
     addAll([cameraComponent, world]);
 
-    _player1 = EmberPlayer(
-      position: Vector2(128, canvasSize.y - 200),
-    );
+    _player1 = EmberPlayer(position: Vector2(128, canvasSize.y - 200),);
+    _player2 = EmberPlayer(position: Vector2(250, canvasSize.y - 200),);
+
     world.add(_player1);
+    world.add(_player2);
 
   }
 
