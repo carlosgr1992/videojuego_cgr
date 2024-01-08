@@ -1,13 +1,14 @@
 
 import 'package:flame/camera.dart';
 import 'package:flame/components.dart';
+import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 import 'package:videojuego_cgr/players/EmberPlayer.dart';
 
 import '../elementos/Gota.dart';
 
-class JuegoCarlos extends FlameGame{
+class JuegoCarlos extends FlameGame with HasKeyboardHandlerComponents {
 
   final world = World();
   late final CameraComponent cameraComponent;
