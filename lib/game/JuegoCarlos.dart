@@ -5,6 +5,8 @@ import 'package:flame/game.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 import 'package:videojuego_cgr/players/EmberPlayer.dart';
 
+import '../elementos/Gota.dart';
+
 class JuegoCarlos extends FlameGame{
 
   final world = World();
@@ -23,21 +25,26 @@ class JuegoCarlos extends FlameGame{
       'Tilemap1_32.png',
     ]);
 
-    cameraComponent = CameraComponent(world: world);
+    mapComponent = await TiledComponent.load('mapa1.tmx', Vector2.all(32));
 
+    cameraComponent = CameraComponent(world: world);
     cameraComponent.viewfinder.anchor = Anchor.topLeft;
 
     addAll([cameraComponent, world]);
 
-    mapComponent = await TiledComponent.load('mapa1.tmx', Vector2.all(32));
     world.add(mapComponent);
 
-    _player1 = EmberPlayer(position: Vector2(128, canvasSize.y - 200),);
-    _player2 = EmberPlayer(position: Vector2(250, canvasSize.y - 200),);
+    ObjectGroup? gotas = mapComponent.tileMap.getLayer<ObjectGroup>("gotas");
+    gotas?.objects.forEach((gota) {
+      Gota spriteGota = Gota(position: Vector2(gota.x, gota.y), size: Vector2.all(64));
+      add(spriteGota);
+    });
+
+    _player1 = EmberPlayer(position: Vector2(128, canvasSize.y - 200));
+    _player2 = EmberPlayer(position: Vector2(250, canvasSize.y - 200));
 
     world.add(_player1);
     world.add(_player2);
-
   }
 
 }
