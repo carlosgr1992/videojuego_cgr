@@ -36,7 +36,7 @@ class JuegoCarlos extends FlameGame{
 
     ObjectGroup? gotas = mapComponent.tileMap.getLayer<ObjectGroup>("gotas");
     gotas?.objects.forEach((gota) {
-      Gota spriteGota = Gota(position: Vector2(gota.x, gota.y), size: Vector2.all(64));
+      Gota spriteGota = Gota(position: Vector2(gota.x, gota.y), size: Vector2.all(32));
       add(spriteGota);
     });
 

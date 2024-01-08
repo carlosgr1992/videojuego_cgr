@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flame/components.dart';
 import 'package:videojuego_cgr/game/JuegoCarlos.dart';
 
@@ -9,7 +11,7 @@ class EmberPlayer extends SpriteAnimationComponent
   }) : super(size: Vector2(64,64), anchor: Anchor.center);
 
   @override
-  void onLoad() {
+  FutureOr<void> onLoad() {
     animation = SpriteAnimation.fromFrameData(
       game.images.fromCache('ember.png'),
       SpriteAnimationData.sequenced(
