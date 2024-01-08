@@ -18,16 +18,17 @@ class JuegoCarlos extends FlameGame{
       'heart.png',
       'star.png',
       'water_enemy.png',
+      'Tilemap1_32.png',
     ]);
 
     cameraComponent = CameraComponent(world: world);
 
-    camera.viewfinder.anchor = Anchor.topLeft;
+    cameraComponent.viewfinder.anchor = Anchor.topLeft;
 
     addAll([cameraComponent, world]);
 
     _player1 = EmberPlayer(
-      position: Vector2(128, canvasSize.y - 70),
+      position: Vector2(128, canvasSize.y - 200),
     );
     world.add(_player1);
 
