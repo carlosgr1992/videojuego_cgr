@@ -18,7 +18,7 @@ import '../players/EmberPlayer2.dart';
 class JuegoCarlos extends Forge2DGame with HasKeyboardHandlerComponents, HasCollisionDetection, CollisionCallbacks {
 
   late final CameraComponent cameraComponent;
-  late EmberPlayerBody _player1;
+  late EmberPlayerBody2 _player1;
   late EmberPlayerBody2 _player2;
   late TiledComponent mapComponent;
 
@@ -34,7 +34,10 @@ class JuegoCarlos extends Forge2DGame with HasKeyboardHandlerComponents, HasColl
       'star.png',
       'water_enemy.png',
       'Tilemap1_32.png',
+      'prueba1mapa.png',
+      'prueba2mapa.jpeg',
     ]);
+
 
     cameraComponent = CameraComponent(world: world);
     wScale=size.x/gameWidth;
@@ -43,27 +46,27 @@ class JuegoCarlos extends Forge2DGame with HasKeyboardHandlerComponents, HasColl
     cameraComponent.viewfinder.anchor = Anchor.topLeft;
     addAll([cameraComponent, world]);
 
-    mapComponent=await TiledComponent.load('mapa1.tmx', Vector2(32,32));
+    mapComponent=await TiledComponent.load('prueba2mapa32.tmx', Vector2(32,32));
     world.add(mapComponent);
 
     ObjectGroup? gotas = mapComponent.tileMap.getLayer<ObjectGroup>("gotas");
 
     for (final gota in gotas!.objects) {
       Gota spriteGota = Gota(position: Vector2(gota.x, gota.y),
-          size: Vector2(32 * wScale, 32 * hScale));
+          size: Vector2(64 * wScale, 64 * hScale));
       add(spriteGota);
     }
 
-    ObjectGroup? tierras = mapComponent.tileMap.getLayer<ObjectGroup>("tierra");
+    /*ObjectGroup? tierras = mapComponent.tileMap.getLayer<ObjectGroup>("tierra");
 
     for (final tiledObjectTierra in tierras!.objects) {
       TierraBody tierraBody = TierraBody(tiledBody: tiledObjectTierra,
           scales: Vector2(wScale, hScale));
       add(tierraBody);
-    }
+    } */
 
-    _player1 = EmberPlayerBody(initialPosition: Vector2(128, canvasSize.y - 350,),
-        tamano: Vector2(50,100)
+    _player1 = EmberPlayerBody2(initialPosition: Vector2(128, canvasSize.y - 350,),
+        tamano: Vector2(50,100), gameRef: this
     );
 
     _player2 = EmberPlayerBody2(
@@ -88,6 +91,11 @@ class JuegoCarlos extends Forge2DGame with HasKeyboardHandlerComponents, HasColl
     }
 
     super.onCollision(intersectionPoints, other);
+  }
+  @override
+  Color backgroundColor() {
+    // TODO: implement backgroundColor
+    return const Color(0xFFE1FFFC);
   }
 }
 
