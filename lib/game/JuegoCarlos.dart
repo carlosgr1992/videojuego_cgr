@@ -3,17 +3,19 @@ import 'package:flame/camera.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
+import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 import 'package:videojuego_cgr/players/EmberPlayer.dart';
 
 import '../elementos/Gota.dart';
 
-class JuegoCarlos extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDetection {
+class JuegoCarlos extends Forge2DGame with HasKeyboardHandlerComponents, HasCollisionDetection {
 
-  final world = World();
   late final CameraComponent cameraComponent;
   late EmberPlayer _player1, _player2;
   late TiledComponent mapComponent;
+
+
 
   @override
   Future<void> onLoad() async {
@@ -48,4 +50,25 @@ class JuegoCarlos extends FlameGame with HasKeyboardHandlerComponents, HasCollis
     world.add(_player2);
   }
 
+}
+
+class EmberPlayerBody extends BodyComponent{
+
+  Vector2 vector2Tamano;
+
+  EmberPlayerBody({required this.vector2Tamano});
+
+  @override
+  Body createBody() {
+    
+    BodyDef definicionCuerpo = BodyDef(position: position,
+    type: BodyType.dynamic, fixedRotation: true);
+    Body cuerpo = world.createBody(definicionCuerpo);
+    
+    final shape = CircleShape();
+    shape.radius = vector2Tamano.x/2;
+    
+    FixtureDef fixtureDef = FixtureDef(shape, restitution: 0.5);
+    return super.createBody();
+  }
 }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
+import 'package:flame_forge2d/body_component.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:videojuego_cgr/game/JuegoCarlos.dart';
@@ -43,6 +44,8 @@ class EmberPlayer extends SpriteAnimationComponent
     ..isSolid = true
     ..renderShape = false; // Muestra el cuadrado del area en el que colision
     add(hitbox);
+
+    add(EmberPlayerBody(vector2Tamano: size));
   }
 
   @override
