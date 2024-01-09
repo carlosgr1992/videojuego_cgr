@@ -1,18 +1,22 @@
 import 'dart:async';
 
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:videojuego_cgr/game/JuegoCarlos.dart';
 
+import '../elementos/Gota.dart';
+
 class EmberPlayer extends SpriteAnimationComponent
-    with HasGameReference<JuegoCarlos>, KeyboardHandler{
+    with HasGameReference<JuegoCarlos>, KeyboardHandler, CollisionCallbacks{
 
   int verticalDirection = 0;
   int horizontalDirection = 0;
   final Vector2 velocity = Vector2.zero();
   final double moveSpeed = 200;
+  late ShapeHitbox hitbox;
 
 
   EmberPlayer({
@@ -29,6 +33,16 @@ class EmberPlayer extends SpriteAnimationComponent
         stepTime: 0.12,
       ),
     );
+
+    final defaultPaint = Paint()
+    ..color = DefaultSelectionStyle.defaultColor
+      ..style = PaintingStyle.stroke;
+
+    hitbox = RectangleHitbox()
+    ..paint = defaultPaint
+    ..isSolid = true
+    ..renderShape = false; // Muestra el cuadrado del area en el que colision
+    add(hitbox);
   }
 
   @override
@@ -36,6 +50,7 @@ class EmberPlayer extends SpriteAnimationComponent
 
     horizontalDirection = 0;
     verticalDirection = 0;
+
 
     if(keysPressed.contains(LogicalKeyboardKey.arrowRight)){
       horizontalDirection = 1;
@@ -62,6 +77,18 @@ class EmberPlayer extends SpriteAnimationComponent
     super.update(dt);
   }
 
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+
+    if (other is Gota /*|| other is PlatformBlock*/) {
+      if (intersectionPoints.length == 2) {
+        if(other is Gota){
+          removeFromParent();
+        }
+      }
+      }
+    super.onCollision(intersectionPoints, other);
+    }
 
 
 }

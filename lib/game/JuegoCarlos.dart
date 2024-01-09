@@ -8,7 +8,7 @@ import 'package:videojuego_cgr/players/EmberPlayer.dart';
 
 import '../elementos/Gota.dart';
 
-class JuegoCarlos extends FlameGame with HasKeyboardHandlerComponents {
+class JuegoCarlos extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDetection {
 
   final world = World();
   late final CameraComponent cameraComponent;

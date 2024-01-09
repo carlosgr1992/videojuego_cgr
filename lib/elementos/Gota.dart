@@ -1,10 +1,17 @@
 import 'dart:async';
+import 'dart:ui';
 
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flutter/cupertino.dart';
 
 import '../game/JuegoCarlos.dart';
 
-class Gota extends SpriteAnimationComponent with HasGameRef<JuegoCarlos> {
+class Gota extends SpriteAnimationComponent with HasGameRef<JuegoCarlos>, CollisionCallbacks {
+
+  late ShapeHitbox hitbox;
+
+
   Gota({
     required Vector2 position,
     required Vector2 size,
@@ -22,6 +29,16 @@ class Gota extends SpriteAnimationComponent with HasGameRef<JuegoCarlos> {
         stepTime: 0.12,
       ),
     );
+
+    final defaultPaint = Paint()
+      ..color = DefaultSelectionStyle.defaultColor
+      ..style = PaintingStyle.stroke;
+
+    hitbox = RectangleHitbox()
+      ..paint = defaultPaint
+      ..isSolid = true
+      ..renderShape = false; // Muestra el cuadrado del area en el que colision
+    add(hitbox);
 
   }
 
