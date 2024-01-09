@@ -13,9 +13,8 @@ class Gota extends SpriteAnimationComponent with HasGameRef<JuegoCarlos>, Collis
 
 
   Gota({
-    required Vector2 position,
-    required Vector2 size,
-  }) : super(position: position, size: size, anchor: Anchor.center);
+    required super.position, required super.size
+  }) : super(anchor: Anchor.center);
 
 
   @override

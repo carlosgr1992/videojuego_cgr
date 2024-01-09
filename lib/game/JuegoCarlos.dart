@@ -1,21 +1,29 @@
 
 import 'package:flame/camera.dart';
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flame_tiled/flame_tiled.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:videojuego_cgr/players/EmberPlayer.dart';
 
+import '../config/config.dart';
 import '../elementos/Gota.dart';
+import '../elementos/TierraBody.dart';
+import '../players/EmberPlayer2.dart';
 
-class JuegoCarlos extends Forge2DGame with HasKeyboardHandlerComponents, HasCollisionDetection {
+class JuegoCarlos extends Forge2DGame with HasKeyboardHandlerComponents, HasCollisionDetection, CollisionCallbacks {
 
   late final CameraComponent cameraComponent;
-  late EmberPlayer _player1, _player2;
+  late EmberPlayerBody _player1;
+  late EmberPlayerBody2 _player2;
   late TiledComponent mapComponent;
 
-
+  double wScale = 1.0,
+      hScale = 1.0;
 
   @override
   Future<void> onLoad() async {
@@ -28,47 +36,86 @@ class JuegoCarlos extends Forge2DGame with HasKeyboardHandlerComponents, HasColl
       'Tilemap1_32.png',
     ]);
 
-    mapComponent = await TiledComponent.load('mapa1.tmx', Vector2.all(32));
-
     cameraComponent = CameraComponent(world: world);
-    cameraComponent.viewfinder.anchor = Anchor.topLeft;
+    wScale=size.x/gameWidth;
+    hScale=size.y/gameHeight;
 
+    cameraComponent.viewfinder.anchor = Anchor.topLeft;
     addAll([cameraComponent, world]);
 
+    mapComponent=await TiledComponent.load('mapa1.tmx', Vector2(32,32));
     world.add(mapComponent);
 
     ObjectGroup? gotas = mapComponent.tileMap.getLayer<ObjectGroup>("gotas");
-    gotas?.objects.forEach((gota) {
-      Gota spriteGota = Gota(position: Vector2(gota.x, gota.y), size: Vector2.all(32));
+
+    for (final gota in gotas!.objects) {
+      Gota spriteGota = Gota(position: Vector2(gota.x, gota.y),
+          size: Vector2(32 * wScale, 32 * hScale));
       add(spriteGota);
-    });
+    }
 
-    _player1 = EmberPlayer(position: Vector2(128, canvasSize.y - 200));
-    _player2 = EmberPlayer(position: Vector2(250, canvasSize.y - 200));
+    ObjectGroup? tierras = mapComponent.tileMap.getLayer<ObjectGroup>("tierra");
 
-    world.add(_player1);
-    world.add(_player2);
+    for (final tiledObjectTierra in tierras!.objects) {
+      TierraBody tierraBody = TierraBody(tiledBody: tiledObjectTierra,
+          scales: Vector2(wScale, hScale));
+      add(tierraBody);
+    }
+
+    _player1 = EmberPlayerBody(initialPosition: Vector2(128, canvasSize.y - 350,),
+        tamano: Vector2(50,100)
+    );
+
+    _player2 = EmberPlayerBody2(initialPosition: Vector2(200, canvasSize.y - 350,),
+        tamano: Vector2(50,50)
+    );
+
+    add(_player1);
+    add(_player2);
   }
-
-}
-
-class EmberPlayerBody extends BodyComponent{
-
-  Vector2 vector2Tamano;
-
-  EmberPlayerBody({required this.vector2Tamano});
 
   @override
-  Body createBody() {
-    
-    BodyDef definicionCuerpo = BodyDef(position: position,
-    type: BodyType.dynamic, fixedRotation: true);
-    Body cuerpo = world.createBody(definicionCuerpo);
-    
-    final shape = CircleShape();
-    shape.radius = vector2Tamano.x/2;
-    
-    FixtureDef fixtureDef = FixtureDef(shape, restitution: 0.5);
-    return super.createBody();
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+
+    if(other is Gota){
+      if(intersectionPoints.length == 2){
+        if(other is Gota){
+          removeFromParent();
+        }
+      }
+    }
+
+    super.onCollision(intersectionPoints, other);
   }
+}
+
+class EmberPlayerBody extends BodyComponent with KeyboardHandler {
+  final Vector2 velocidad = Vector2.zero();
+  final double aceleracion = 200;
+
+  late Vector2 tamano;
+  int horizontalDirection = 0;
+  int verticalDirection = 0;
+
+  final _defaultColor = Colors.red;
+  late EmberPlayer emberPlayer;
+  late double jumpSpeed = 0.0;
+
+  EmberPlayerBody({Vector2? initialPosition,
+    required this.tamano})
+      : super(
+    fixtureDefs: [
+      FixtureDef(
+        CircleShape()
+          ..radius = tamano.x / 2,
+        restitution: 0.8,
+        friction: 0.4,
+      ),
+    ],
+    bodyDef: BodyDef(
+      angularDamping: 0.8,
+      position: initialPosition ?? Vector2.zero(),
+      type: BodyType.dynamic,
+    ),
+  );
 }
