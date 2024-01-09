@@ -66,8 +66,10 @@ class JuegoCarlos extends Forge2DGame with HasKeyboardHandlerComponents, HasColl
         tamano: Vector2(50,100)
     );
 
-    _player2 = EmberPlayerBody2(initialPosition: Vector2(200, canvasSize.y - 350,),
-        tamano: Vector2(50,50)
+    _player2 = EmberPlayerBody2(
+      gameRef: this, // Agrega esto
+      initialPosition: Vector2(200, canvasSize.y - 350),
+      tamano: Vector2(50, 50),
     );
 
     add(_player1);

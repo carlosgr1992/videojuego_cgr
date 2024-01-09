@@ -13,47 +13,49 @@ import 'package:videojuego_cgr/game/JuegoCarlos.dart';
 import '../elementos/Gota.dart';
 
 class EmberPlayer extends SpriteAnimationComponent
-    with HasGameRef<JuegoCarlos> {
+    with HasGameRef<JuegoCarlos>, KeyboardHandler, CollisionCallbacks {
 
-  late int iTipo=-1;
+  late ShapeHitbox hitbox;
+  late Vector2 tamano;
 
   EmberPlayer({
-    required super.position,required this.iTipo
+    required super.position
     ,required super.size
   }) : super( anchor: Anchor.center);
 
   @override
-  void onLoad() {
-    animation = SpriteAnimation.fromFrameData(
-      game.images.fromCache('reading.png'),
-      SpriteAnimationData.sequenced(
-        amount: 15,
-        amountPerRow: 5,
-        textureSize: Vector2(60,88),
-        stepTime: 0.12,
+  Future<void> onLoad() async {
+    await super.onLoad();
+    final spriteComponent = SpriteAnimationComponent(
+      animation: await gameRef.loadSpriteAnimation(
+          'ember.png', // Asegúrate de que esta ruta es correcta
+          SpriteAnimationData.sequenced(
+            amount: 4,
+            textureSize: Vector2(60, 88),
+            stepTime: 0.12,
+          )
       ),
+      size: tamano,
+      anchor: Anchor.center,
     );
-
+    add(spriteComponent);
   }
 }
 
-class EmberPlayerBody extends BodyComponent with KeyboardHandler{
+class EmberPlayerBody extends BodyComponent with KeyboardHandler, CollisionCallbacks {
   final Vector2 velocidad = Vector2.zero();
   final double aceleracion = 200;
-  final Set<LogicalKeyboardKey> magiaSubZero={LogicalKeyboardKey.arrowDown, LogicalKeyboardKey.keyA};
-  final Set<LogicalKeyboardKey> magiaScorpio={LogicalKeyboardKey.arrowUp, LogicalKeyboardKey.keyK};
-  late int iTipo=-1;
+
+
   late Vector2 tamano;
   int horizontalDirection = 0;
   int verticalDirection = 0;
-  static const  int I_PLAYER_SUBZERO=0;
-  static const  int I_PLAYER_SCORPIO=1;
-  static const  int I_PLAYER_TANYA=2;
+
   final _defaultColor = Colors.red;
   late EmberPlayer emberPlayer;
   late double jumpSpeed=0.0;
 
-  EmberPlayerBody({Vector2? initialPosition,required this.iTipo,
+  EmberPlayerBody({Vector2? initialPosition,
     required this.tamano})
       : super(
     fixtureDefs: [
@@ -70,11 +72,20 @@ class EmberPlayerBody extends BodyComponent with KeyboardHandler{
     ),
   );
 
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    super.onCollision(intersectionPoints, other);
+
+    if (other is Gota) {
+      // Aquí manejas lo que sucede cuando EmberPlayer colisiona con una Gota
+      removeFromParent(); // Esto removerá EmberPlayerBody del juego
+      print("COLISION");
+    }
+  }
 
   @override
   Future<void> onLoad() {
-    // TODO: implement onLoad
-    emberPlayer=EmberPlayer(position: Vector2(0,0),iTipo: iTipo,size:tamano);
+    emberPlayer=EmberPlayer(position: Vector2(0,0),size:tamano);
     add(emberPlayer);
     return super.onLoad();
   }
@@ -106,7 +117,6 @@ class EmberPlayerBody extends BodyComponent with KeyboardHandler{
     velocidad.y = verticalDirection * aceleracion;
     velocidad.y += -1 * jumpSpeed;
 
-    print("--------->>>>>>>>> ${velocidad}");
     body.applyLinearImpulse(velocidad*dt*1000);
 
     if (horizontalDirection < 0 && emberPlayer.scale.x > 0) {
@@ -118,6 +128,7 @@ class EmberPlayerBody extends BodyComponent with KeyboardHandler{
 
     super.update(dt);
   }
+
 
 }
 

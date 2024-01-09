@@ -12,46 +12,46 @@ import 'package:videojuego_cgr/game/JuegoCarlos.dart';
 
 import '../elementos/Gota.dart';
 
-class EmberPlayer2 extends SpriteAnimationComponent
-    with HasGameRef<JuegoCarlos> {
-
-  late int iTipo=-1;
+class EmberPlayer2 extends SpriteAnimationComponent {
+  final JuegoCarlos gameRef;
 
   EmberPlayer2({
-    required super.position
-    ,required super.size
-  }) : super( anchor: Anchor.center);
+    required this.gameRef,
+    required Vector2 position,
+    required Vector2 size,
+  }) : super(position: position, size: size, anchor: Anchor.center);
 
   @override
-  void onLoad() {
-    animation = SpriteAnimation.fromFrameData(
-      game.images.fromCache('ember.png'),
+  Future<void> onLoad() async {
+    // Cargamos la animación y la asignamos a la variable 'animation'
+    animation = await gameRef.loadSpriteAnimation(
+      'ember.png', // Ruta correcta de tu imagen
       SpriteAnimationData.sequenced(
         amount: 4,
-        amountPerRow: 4,
-        textureSize: Vector2(16,16),
+        textureSize: Vector2(16, 16),
         stepTime: 0.12,
       ),
     );
-
   }
 }
 
-class EmberPlayerBody2 extends BodyComponent with KeyboardHandler{
+
+class EmberPlayerBody2 extends BodyComponent with KeyboardHandler, CollisionCallbacks {
+  final JuegoCarlos gameRef;
+
   final Vector2 velocidad = Vector2.zero();
   final double aceleracion = 200;
 
   late Vector2 tamano;
   int horizontalDirection = 0;
   int verticalDirection = 0;
-
-  final _defaultColor = Colors.red;
   late EmberPlayer2 emberPlayer2;
-  late double jumpSpeed=0.0;
 
-  EmberPlayerBody2({Vector2? initialPosition,
-    required this.tamano})
-      : super(
+  EmberPlayerBody2({
+    Vector2? initialPosition,
+    required this.gameRef,
+    required this.tamano,
+  }) : super(
     fixtureDefs: [
       FixtureDef(
         CircleShape()..radius = tamano.x/2,
@@ -66,12 +66,25 @@ class EmberPlayerBody2 extends BodyComponent with KeyboardHandler{
     ),
   );
 
+  @override
+  Future<void> onLoad() async {
+    await super.onLoad();
+    emberPlayer2 = EmberPlayer2(
+      gameRef: gameRef,
+      position: Vector2.zero(),
+      size: tamano,
+    );
+    add(emberPlayer2);
+  }
 
   @override
-  Future<void> onLoad() {
-    emberPlayer2=EmberPlayer2(position: Vector2(0,0),size:tamano);
-    add(emberPlayer2);
-    return super.onLoad();
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    super.onCollision(intersectionPoints, other);
+
+    if (other is Gota) {
+      removeFromParent(); // Esto removerá EmberPlayerBody del juego
+      print("COLISION");
+    }
   }
 
   @override
@@ -84,11 +97,16 @@ class EmberPlayerBody2 extends BodyComponent with KeyboardHandler{
     horizontalDirection = 0;
     verticalDirection = 0;
 
-    //movimiento
-    if(keysPressed.contains(LogicalKeyboardKey.arrowLeft)){horizontalDirection=-1;}
-    else if(keysPressed.contains(LogicalKeyboardKey.arrowRight)){horizontalDirection=1;}
-    if(keysPressed.contains(LogicalKeyboardKey.arrowUp)){verticalDirection=-1;}
-    else if(keysPressed.contains(LogicalKeyboardKey.arrowDown)){verticalDirection=1;}
+    if (keysPressed.contains(LogicalKeyboardKey.keyA)) {
+      horizontalDirection = -1;
+    } else if (keysPressed.contains(LogicalKeyboardKey.keyD)) {
+      horizontalDirection = 1;
+    }
+    if (keysPressed.contains(LogicalKeyboardKey.keyW)) {
+      verticalDirection = -1;
+    } else if (keysPressed.contains(LogicalKeyboardKey.keyS)) {
+      verticalDirection = 1;
+    }
 
     return true;
   }
@@ -97,19 +115,15 @@ class EmberPlayerBody2 extends BodyComponent with KeyboardHandler{
   void update(double dt) {
     velocidad.x = horizontalDirection * aceleracion;
     velocidad.y = verticalDirection * aceleracion;
-    velocidad.y += -1 * jumpSpeed;
 
-    print("--------->>>>>>>>> ${velocidad}");
-    body.applyLinearImpulse(velocidad*dt*1000);
+    body.applyLinearImpulse(velocidad * dt * 1000);
 
     if (horizontalDirection < 0 && emberPlayer2.scale.x > 0) {
       emberPlayer2.flipHorizontallyAroundCenter();
-    }
-    else if (horizontalDirection > 0 && emberPlayer2.scale.x < 0) {
+    } else if (horizontalDirection > 0 && emberPlayer2.scale.x < 0) {
       emberPlayer2.flipHorizontallyAroundCenter();
     }
 
     super.update(dt);
   }
-
 }
