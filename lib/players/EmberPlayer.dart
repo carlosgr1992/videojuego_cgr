@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:videojuego_cgr/game/JuegoCarlos.dart';
 
-import '../elementos/Gota.dart';
+import '../elementos/GotaBoss.dart';
 import '../elementos/VidaComponent.dart';
 import 'EmberPlayer2.dart';
 

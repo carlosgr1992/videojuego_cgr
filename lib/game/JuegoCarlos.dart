@@ -12,6 +12,7 @@ import 'package:videojuego_cgr/players/EmberPlayer.dart';
 
 import '../config/config.dart';
 import '../elementos/Gota.dart';
+import '../elementos/GotaBoss.dart';
 import '../elementos/TierraBody.dart';
 import '../elementos/VidaComponent.dart';
 import '../players/EmberPlayer2.dart';
@@ -24,6 +25,7 @@ class JuegoCarlos extends Forge2DGame with
   late final CameraComponent cameraComponent;
   late EmberPlayerBody _player;
   late EmberPlayerBody2 _player2;
+  late GotaBoss gotaBoss;
   late Gota gota;
   late TiledComponent mapComponent;
 
@@ -94,20 +96,20 @@ class JuegoCarlos extends Forge2DGame with
     // Crear las instancias de EmberPlayerBody después de crear vidasComponent
     _player = EmberPlayerBody(
       gameRef: this,
-      initialPosition: Vector2(128, canvasSize.y - 350),
+      initialPosition: Vector2(98, canvasSize.y - 350),
       tamano: Vector2(50, 50),
       vidasComponent: vidasComponent, // Utiliza la variable de instancia
     );
     add(_player);
 
 
-    _player2 = EmberPlayerBody2(initialPosition: Vector2(200, canvasSize.y - 350,),
+    _player2 = EmberPlayerBody2(initialPosition: Vector2(170, canvasSize.y - 350,),
         tamano: Vector2(50,50), vidasComponent: vidasComponent, gameRef: this
     );
     add(_player2);
 
-    gota = Gota(position: Vector2(400, canvasSize.y - 350,), size: Vector2(75,75));
-    add(gota);
+    gotaBoss = GotaBoss(position: Vector2(320, canvasSize.y - 180,), size: Vector2(90,90));
+    add(gotaBoss);
 
 
   }
