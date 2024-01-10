@@ -29,6 +29,14 @@ class JuegoCarlos extends Forge2DGame with
 
   double wScale=1.0,hScale=1.0;
 
+  void toggleWorldGravity() {
+    if (world.gravity.y == 1.0) { // Gravedad normal
+      world.gravity = Vector2(0, -1.0); // Gravedad invertida
+    } else {
+      world.gravity = Vector2(0, 1.0); // Restablecer a la gravedad normal
+    }
+  }
+
   @override
   Future<void> onLoad() async {
     await images.loadAll([
@@ -78,6 +86,7 @@ class JuegoCarlos extends Forge2DGame with
 
     // Crear las instancias de EmberPlayerBody después de crear vidasComponent
     _player = EmberPlayerBody(
+      gameRef: this,
       initialPosition: Vector2(128, canvasSize.y - 350),
       tamano: Vector2(50, 50),
       vidasComponent: vidasComponent, // Utiliza la variable de instancia
@@ -86,7 +95,7 @@ class JuegoCarlos extends Forge2DGame with
 
 
     _player2 = EmberPlayerBody2(initialPosition: Vector2(200, canvasSize.y - 350,),
-        tamano: Vector2(50,50), vidasComponent: vidasComponent
+        tamano: Vector2(50,50), vidasComponent: vidasComponent, gameRef: this
     );
 
 

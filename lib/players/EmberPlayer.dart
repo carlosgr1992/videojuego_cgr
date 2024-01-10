@@ -53,7 +53,7 @@ class EmberPlayerBody extends BodyComponent with KeyboardHandler, CollisionCallb
   final Vector2 velocidad = Vector2.zero();
   final double aceleracion = 200;
   final VidasComponent vidasComponent;
-
+  final JuegoCarlos gameRef;
 
   late Vector2 tamano;
   int horizontalDirection = 0;
@@ -63,7 +63,7 @@ class EmberPlayerBody extends BodyComponent with KeyboardHandler, CollisionCallb
   late double jumpSpeed=0.0;
 
   EmberPlayerBody({
-    Vector2? initialPosition,required this.vidasComponent,
+    Vector2? initialPosition,required this.vidasComponent,required this.gameRef,
     required this.tamano})
       : super(
     fixtureDefs: [
@@ -106,6 +106,12 @@ class EmberPlayerBody extends BodyComponent with KeyboardHandler, CollisionCallb
   bool onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
     horizontalDirection = 0;
     verticalDirection = 0;
+
+    if (event is RawKeyDownEvent) {
+      if (event.logicalKey == LogicalKeyboardKey.digit5) {
+        gameRef.toggleWorldGravity();
+      }
+    }
 
     if((keysPressed.contains(LogicalKeyboardKey.keyA))){horizontalDirection=-1;}
     else if((keysPressed.contains(LogicalKeyboardKey.keyD))){horizontalDirection=1;}

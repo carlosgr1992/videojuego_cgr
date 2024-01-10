@@ -16,10 +16,12 @@ import '../elementos/VidaComponent.dart';
 class EmberPlayer2 extends SpriteAnimationComponent
     with HasGameRef<JuegoCarlos> {
 
-  EmberPlayer2({
-    required super.position
-    ,required super.size
-  }) : super( anchor: Anchor.center);
+  final VidasComponent vidasComponent;
+
+  EmberPlayer2(this.vidasComponent, {
+    required super.position,
+    required super.size,
+  }) : super(anchor: Anchor.center);
 
   @override
   void onLoad() {
@@ -33,13 +35,22 @@ class EmberPlayer2 extends SpriteAnimationComponent
       ),
     );
   }
+
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    if (other is EmberPlayerBody2 || other is EmberPlayerBody2) {
+      vidasComponent.perderVida();
+    }
+  }
+
 }
 
-class EmberPlayerBody2 extends BodyComponent with KeyboardHandler{
+class EmberPlayerBody2 extends BodyComponent with KeyboardHandler, CollisionCallbacks{
 
   final VidasComponent vidasComponent;
   final Vector2 velocidad = Vector2.zero();
   final double aceleracion = 200;
+  final JuegoCarlos gameRef;
 
   late Vector2 tamano;
   int horizontalDirection = 0;
@@ -47,7 +58,8 @@ class EmberPlayerBody2 extends BodyComponent with KeyboardHandler{
   late EmberPlayer2 emberPlayer2;
   late double jumpSpeed=0.0;
 
-  EmberPlayerBody2({Vector2? initialPosition,required this.vidasComponent,
+  EmberPlayerBody2({
+    Vector2? initialPosition,required this.vidasComponent,required this.gameRef,
     required this.tamano})
       : super(
     fixtureDefs: [
@@ -64,12 +76,25 @@ class EmberPlayerBody2 extends BodyComponent with KeyboardHandler{
     ),
   );
 
+
   @override
   Future<void> onLoad() {
-    // TODO: implement onLoad
-    emberPlayer2=EmberPlayer2(position: Vector2(0,0),size:tamano);
-    add(emberPlayer2);
+    emberPlayer2 = EmberPlayer2(
+      vidasComponent, // Argumento posicional
+      position: Vector2(0, 0),
+      size: tamano,
+    );
+    add(emberPlayer2); // Corrección de nombre aquí
     return super.onLoad();
+  }
+
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    super.onCollision(intersectionPoints, other);
+
+    if (other is EmberPlayerBody2) {
+      vidasComponent.perderVida();
+    }
   }
 
   @override
@@ -82,6 +107,12 @@ class EmberPlayerBody2 extends BodyComponent with KeyboardHandler{
 
     horizontalDirection = 0;
     verticalDirection = 0;
+
+    if (event is RawKeyDownEvent) {
+      if (event.logicalKey == LogicalKeyboardKey.digit5) {
+        gameRef.toggleWorldGravity();
+      }
+    }
 
     if(keysPressed.contains(LogicalKeyboardKey.arrowLeft)){horizontalDirection=-1;}
     else if(keysPressed.contains(LogicalKeyboardKey.arrowRight)){horizontalDirection=1;}
