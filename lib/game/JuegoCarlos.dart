@@ -13,10 +13,13 @@ import 'package:videojuego_cgr/players/EmberPlayer.dart';
 import '../config/config.dart';
 import '../elementos/Gota.dart';
 import '../elementos/TierraBody.dart';
+import '../elementos/VidaComponent.dart';
 import '../players/EmberPlayer2.dart';
 
 class JuegoCarlos extends Forge2DGame with
     HasKeyboardHandlerComponents,HasCollisionDetection, CollisionCallbacks{
+
+  late VidasComponent vidasComponent;
 
   late final CameraComponent cameraComponent;
   late EmberPlayerBody _player;
@@ -38,7 +41,6 @@ class JuegoCarlos extends Forge2DGame with
       'prueba1mapa.png',
       'prueba2mapa.jpeg',
     ]);
-
 
     cameraComponent = CameraComponent(world: world);
     wScale=size.x/gameWidth;
@@ -66,16 +68,32 @@ class JuegoCarlos extends Forge2DGame with
       add(tierraBody);
     }
 
-    _player = EmberPlayerBody(initialPosition: Vector2(128, canvasSize.y - 350,),
-        tamano: Vector2(50,50)
+    vidasComponent = VidasComponent(
+      totalVidas: 3,
+      vidaCompleta: Sprite(await images.load('heart.png')),
+      mediaVida: Sprite(await images.load('heart_half.png')),
+      tamanoCorazon: Vector2(32, 32),
     );
+    add(vidasComponent);
+
+    // Crear las instancias de EmberPlayerBody después de crear vidasComponent
+    _player = EmberPlayerBody(
+      initialPosition: Vector2(128, canvasSize.y - 350),
+      tamano: Vector2(50, 50),
+      vidasComponent: vidasComponent, // Utiliza la variable de instancia
+    );
+    add(_player);
+
 
     _player2 = EmberPlayerBody2(initialPosition: Vector2(200, canvasSize.y - 350,),
-        tamano: Vector2(50,50)
+        tamano: Vector2(50,50), vidasComponent: vidasComponent
     );
 
-    add(_player);
+
     add(_player2);
+
+
+
 
   }
 

@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:videojuego_cgr/game/JuegoCarlos.dart';
 
 import '../elementos/Gota.dart';
+import '../elementos/VidaComponent.dart';
 
 class EmberPlayer2 extends SpriteAnimationComponent
     with HasGameRef<JuegoCarlos> {
@@ -36,6 +37,7 @@ class EmberPlayer2 extends SpriteAnimationComponent
 
 class EmberPlayerBody2 extends BodyComponent with KeyboardHandler{
 
+  final VidasComponent vidasComponent;
   final Vector2 velocidad = Vector2.zero();
   final double aceleracion = 200;
 
@@ -45,7 +47,7 @@ class EmberPlayerBody2 extends BodyComponent with KeyboardHandler{
   late EmberPlayer2 emberPlayer2;
   late double jumpSpeed=0.0;
 
-  EmberPlayerBody2({Vector2? initialPosition,
+  EmberPlayerBody2({Vector2? initialPosition,required this.vidasComponent,
     required this.tamano})
       : super(
     fixtureDefs: [

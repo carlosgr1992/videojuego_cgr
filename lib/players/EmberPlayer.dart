@@ -11,8 +11,12 @@ import 'package:flutter/services.dart';
 import 'package:videojuego_cgr/game/JuegoCarlos.dart';
 
 import '../elementos/Gota.dart';
+import '../elementos/VidaComponent.dart';
+import 'EmberPlayer2.dart';
 
 class EmberPlayer extends SpriteAnimationComponent with HasGameRef<JuegoCarlos> {
+
+  final VidasComponent vidasComponent;
 
   late EmberPlayerBody parentBody;
 
@@ -20,6 +24,7 @@ class EmberPlayer extends SpriteAnimationComponent with HasGameRef<JuegoCarlos> 
     required super.position,
     required super.size,
     required this.parentBody,
+    required this.vidasComponent,
   }) : super(anchor: Anchor.center);
 
   @override
@@ -38,8 +43,8 @@ class EmberPlayer extends SpriteAnimationComponent with HasGameRef<JuegoCarlos> 
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
-    if (other is Gota) {
-      parentBody.removeEmberPlayer();
+    if (other is EmberPlayerBody || other is EmberPlayerBody2) {
+      vidasComponent.perderVida();
     }
   }
 }
@@ -47,6 +52,7 @@ class EmberPlayer extends SpriteAnimationComponent with HasGameRef<JuegoCarlos> 
 class EmberPlayerBody extends BodyComponent with KeyboardHandler, CollisionCallbacks {
   final Vector2 velocidad = Vector2.zero();
   final double aceleracion = 200;
+  final VidasComponent vidasComponent;
 
 
   late Vector2 tamano;
@@ -57,7 +63,7 @@ class EmberPlayerBody extends BodyComponent with KeyboardHandler, CollisionCallb
   late double jumpSpeed=0.0;
 
   EmberPlayerBody({
-    Vector2? initialPosition,
+    Vector2? initialPosition,required this.vidasComponent,
     required this.tamano})
       : super(
     fixtureDefs: [
@@ -85,6 +91,7 @@ class EmberPlayerBody extends BodyComponent with KeyboardHandler, CollisionCallb
       position: Vector2(0, 0),
       size: tamano,
       parentBody: this,
+      vidasComponent: vidasComponent, // Pasar vidasComponent aquí
     );
     add(emberPlayer);
     return super.onLoad();
