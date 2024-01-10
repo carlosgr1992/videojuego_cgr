@@ -30,11 +30,18 @@ class JuegoCarlos extends Forge2DGame with
   double wScale=1.0,hScale=1.0;
 
   void toggleWorldGravity() {
-    if (world.gravity.y == 1.0) { // Gravedad normal
-      world.gravity = Vector2(0, -1.0); // Gravedad invertida
+    if (world.gravity.y == 1.0) {
+      // Gravedad normal
+      world.gravity = Vector2(0, -100.0); // Gravedad invertida
+      print("ENTRA EN GRAVEDAD 1");
+    } else if (world.gravity.y == -100.0) {
+      // Gravedad invertida, cambia a normal
+      world.gravity = Vector2(0, 100.0);
+      print("ENTRA EN GRAVEDAD 100");
     } else {
-      world.gravity = Vector2(0, 1.0); // Restablecer a la gravedad normal
+      world.gravity = Vector2(0, 1.0);
     }
+
   }
 
   @override
@@ -77,7 +84,7 @@ class JuegoCarlos extends Forge2DGame with
     }
 
     vidasComponent = VidasComponent(
-      totalVidas: 3,
+      totalVidas: 5,
       vidaCompleta: Sprite(await images.load('heart.png')),
       mediaVida: Sprite(await images.load('heart_half.png')),
       tamanoCorazon: Vector2(32, 32),
