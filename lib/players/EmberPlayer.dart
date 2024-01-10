@@ -77,6 +77,7 @@ class EmberPlayerBody extends BodyComponent with KeyboardHandler, CollisionCallb
       angularDamping: 0.8,
       position: initialPosition ?? Vector2.zero(),
       type: BodyType.dynamic,
+      fixedRotation: true,
     ),
   );
 

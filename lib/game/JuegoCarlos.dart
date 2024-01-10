@@ -104,11 +104,10 @@ class JuegoCarlos extends Forge2DGame with
     _player2 = EmberPlayerBody2(initialPosition: Vector2(200, canvasSize.y - 350,),
         tamano: Vector2(50,50), vidasComponent: vidasComponent, gameRef: this
     );
-
-
     add(_player2);
 
-
+    gota = Gota(position: Vector2(400, canvasSize.y - 350,), size: Vector2(75,75));
+    add(gota);
 
 
   }

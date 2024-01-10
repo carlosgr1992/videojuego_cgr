@@ -15,6 +15,8 @@ class Gota extends SpriteAnimationComponent
   }) : super(anchor: Anchor.center);
 
   late ShapeHitbox hitbox;
+
+  @override
   Future<void> onLoad() async{
     // TODO: implement onLoad
 
@@ -35,7 +37,7 @@ class Gota extends SpriteAnimationComponent
     hitbox = RectangleHitbox()
       ..paint = defaultPaint
       ..isSolid = true
-      ..renderShape = true; // Muestra el cuadrado del area en el que colision
+      ..renderShape = false; // Muestra el cuadrado del area en el que colision
     add(hitbox);
 
     return super.onLoad();
