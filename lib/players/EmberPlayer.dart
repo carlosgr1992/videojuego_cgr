@@ -12,33 +12,35 @@ import 'package:videojuego_cgr/game/JuegoCarlos.dart';
 
 import '../elementos/Gota.dart';
 
-class EmberPlayer extends SpriteAnimationComponent
-    with HasGameRef<JuegoCarlos>, KeyboardHandler, CollisionCallbacks {
+class EmberPlayer extends SpriteAnimationComponent with HasGameRef<JuegoCarlos> {
 
-  late ShapeHitbox hitbox;
-  late Vector2 tamano;
+  late EmberPlayerBody parentBody;
 
   EmberPlayer({
-    required super.position
-    ,required super.size
-  }) : super( anchor: Anchor.center);
+    required super.position,
+    required super.size,
+    required this.parentBody,
+  }) : super(anchor: Anchor.center);
 
   @override
-  Future<void> onLoad() async {
-    await super.onLoad();
-    final spriteComponent = SpriteAnimationComponent(
-      animation: await gameRef.loadSpriteAnimation(
-          'ember.png', // Asegúrate de que esta ruta es correcta
-          SpriteAnimationData.sequenced(
-            amount: 4,
-            textureSize: Vector2(60, 88),
-            stepTime: 0.12,
-          )
+  void onLoad() {
+    animation = SpriteAnimation.fromFrameData(
+      game.images.fromCache('ember.png'),
+      SpriteAnimationData.sequenced(
+        amount: 4,
+        amountPerRow: 4,
+        textureSize: Vector2(16,16),
+        stepTime: 0.12,
       ),
-      size: tamano,
-      anchor: Anchor.center,
     );
-    add(spriteComponent);
+
+  }
+
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    if (other is Gota) {
+      parentBody.removeEmberPlayer();
+    }
   }
 }
 
@@ -51,11 +53,11 @@ class EmberPlayerBody extends BodyComponent with KeyboardHandler, CollisionCallb
   int horizontalDirection = 0;
   int verticalDirection = 0;
 
-  final _defaultColor = Colors.red;
   late EmberPlayer emberPlayer;
   late double jumpSpeed=0.0;
 
-  EmberPlayerBody({Vector2? initialPosition,
+  EmberPlayerBody({
+    Vector2? initialPosition,
     required this.tamano})
       : super(
     fixtureDefs: [
@@ -72,20 +74,18 @@ class EmberPlayerBody extends BodyComponent with KeyboardHandler, CollisionCallb
     ),
   );
 
-  @override
-  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
-    super.onCollision(intersectionPoints, other);
-
-    if (other is Gota) {
-      // Aquí manejas lo que sucede cuando EmberPlayer colisiona con una Gota
-      removeFromParent(); // Esto removerá EmberPlayerBody del juego
-      print("COLISION");
-    }
+  void removeEmberPlayer() {
+    emberPlayer.removeFromParent();
   }
+
 
   @override
   Future<void> onLoad() {
-    emberPlayer=EmberPlayer(position: Vector2(0,0),size:tamano);
+    emberPlayer = EmberPlayer(
+      position: Vector2(0, 0),
+      size: tamano,
+      parentBody: this,
+    );
     add(emberPlayer);
     return super.onLoad();
   }
@@ -97,11 +97,9 @@ class EmberPlayerBody extends BodyComponent with KeyboardHandler, CollisionCallb
 
   @override
   bool onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
-    // TODO: implement onKeyEvent
     horizontalDirection = 0;
     verticalDirection = 0;
 
-    //movimiento
     if((keysPressed.contains(LogicalKeyboardKey.keyA))){horizontalDirection=-1;}
     else if((keysPressed.contains(LogicalKeyboardKey.keyD))){horizontalDirection=1;}
     if((keysPressed.contains(LogicalKeyboardKey.keyW))){verticalDirection=-1;}
@@ -112,7 +110,7 @@ class EmberPlayerBody extends BodyComponent with KeyboardHandler, CollisionCallb
 
   @override
   void update(double dt) {
-    //updatear movimiento
+
     velocidad.x = horizontalDirection * aceleracion;
     velocidad.y = verticalDirection * aceleracion;
     velocidad.y += -1 * jumpSpeed;
@@ -125,11 +123,8 @@ class EmberPlayerBody extends BodyComponent with KeyboardHandler, CollisionCallb
     else if (horizontalDirection > 0 && emberPlayer.scale.x < 0) {
       emberPlayer.flipHorizontallyAroundCenter();
     }
-
     super.update(dt);
   }
-
-
 }
 
 
