@@ -20,8 +20,9 @@ class GotaBoss extends BodyComponent with CollisionCallbacks {
       ..friction = 0.2;
 
     final bodyDef = BodyDef()
-      ..type = BodyType.dynamic
+      ..type = BodyType.static  // Static le hace que no se mueva
       ..position = position
+      ..userData = this
       ..fixedRotation = true;
 
     return world.createBody(bodyDef)..createFixture(fixtureDef);
