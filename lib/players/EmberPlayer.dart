@@ -110,8 +110,10 @@ class EmberPlayerBody extends BodyComponent with KeyboardHandler, CollisionCallb
 
     if (event is RawKeyDownEvent) {
       if (event.logicalKey == LogicalKeyboardKey.space) {
-        body.gravityOverride = Vector2(0, -100.0);
-        print("JUGADOR 1 INVERTIDO");
+        body.gravityOverride = (body.gravityOverride?.y ?? 0) > 1
+            ? Vector2(0, -100.0)
+            : Vector2(0, 100.0);
+        print("Jugador 1 invertida gravedad");
       }
     }
 
