@@ -5,7 +5,7 @@ import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/cupertino.dart';
 import '../game/JuegoCarlos.dart';
 
-class GotaBoss extends BodyComponent with CollisionCallbacks {
+class GotaBoss extends BodyComponent with CollisionCallbacks, ContactCallbacks {
   final Vector2 position;
   final Vector2 size;
 

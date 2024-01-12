@@ -49,11 +49,12 @@ class JuegoCarlos extends Forge2DGame with
     hScale=size.y/gameHeight;
 
     cameraComponent.viewfinder.anchor = Anchor.topLeft;
-    addAll([cameraComponent, world]);
+    //addAll([cameraComponent, world]);
 
     mapComponent=await TiledComponent.load('prueba2mapa32.tmx', Vector2(32,32));
-    world.add(mapComponent);
+    add(mapComponent);
 
+    //gotas
     ObjectGroup? gotas=mapComponent.tileMap.getLayer<ObjectGroup>("gotas");
 
     for(final gota in gotas!.objects){
@@ -98,6 +99,19 @@ class JuegoCarlos extends Forge2DGame with
 
 
   }
+
+  /*void inicioContactoJuego(Object objeto, Contact contacto){
+
+    if(objeto is GotaBody){
+      print("gota tocada");
+    }else if{(objeto is TierraBody){
+      print("Tierra tocada");
+    }else if(objeto is EmberPlayerBody){
+      print("jugador tocado");
+    }
+
+    }
+  } */
 
   @override
   Color backgroundColor() {

@@ -67,6 +67,7 @@ class EmberPlayerBody2 extends BodyComponent with KeyboardHandler, CollisionCall
         CircleShape()..radius = tamano.x/2,
         restitution: 0.8,
         friction: 0.4,
+
       ),
     ],
     bodyDef: BodyDef(

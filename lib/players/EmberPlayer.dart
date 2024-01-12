@@ -67,10 +67,11 @@ class EmberPlayerBody extends BodyComponent with KeyboardHandler, CollisionCallb
     required this.tamano})
       : super(
     fixtureDefs: [
-      FixtureDef(
+      FixtureDef( //el anclaje al mundo
         CircleShape()..radius = tamano.x/2,
-        restitution: 0.8,
+        restitution: 0.8, //rebote
         friction: 0.4,
+        //userData: this
       ),
     ],
     bodyDef: BodyDef(
