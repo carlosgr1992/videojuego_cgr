@@ -45,12 +45,14 @@ class EmberPlayer2 extends SpriteAnimationComponent
 
 }
 
-class EmberPlayerBody2 extends BodyComponent with KeyboardHandler, CollisionCallbacks{
+class EmberPlayerBody2 extends BodyComponent with KeyboardHandler,ContactCallbacks, CollisionCallbacks{
 
   final VidasComponent vidasComponent;
   final Vector2 velocidad = Vector2.zero();
   final double aceleracion = 200;
   final JuegoCarlos gameRef;
+  int vidas=3;
+  Vector2 initialPosition;
 
   late Vector2 tamano;
   int horizontalDirection = 0;
@@ -59,25 +61,37 @@ class EmberPlayerBody2 extends BodyComponent with KeyboardHandler, CollisionCall
   late double jumpSpeed=0.0;
 
   EmberPlayerBody2({
-    Vector2? initialPosition,required this.vidasComponent,required this.gameRef,
+    required this.initialPosition,required this.vidasComponent,required this.gameRef,
     required this.tamano})
-      : super(
-    fixtureDefs: [
-      FixtureDef(
-        CircleShape()..radius = tamano.x/2,
-        restitution: 0.8,
-        friction: 0.4,
+      : super();
 
-      ),
-    ],
-    bodyDef: BodyDef(
-      angularDamping: 0.8,
-      position: initialPosition ?? Vector2.zero(),
-      type: BodyType.dynamic,
-      fixedRotation: true,
-    ),
-  );
+  @override
+  Body createBody() {
+    BodyDef definicionCuerpo = BodyDef(
+        position: initialPosition,
+        type: BodyType.dynamic,
+        angularDamping: 0.8,
+        fixedRotation: true, // Esto evita que el cuerpo rote
+        userData: this
+    );
 
+    Body cuerpo = world.createBody(definicionCuerpo);
+
+    final shape = CircleShape();
+    shape.radius = tamano.x / 2;
+
+    FixtureDef fixtureDef = FixtureDef(
+        shape,
+        //density: 10.0,
+        friction: 0.2,
+        restitution: 0.5,
+        userData: this
+    );
+
+    cuerpo.createFixture(fixtureDef);
+
+    return cuerpo;
+  }
 
   @override
   Future<void> onLoad() {
@@ -86,7 +100,7 @@ class EmberPlayerBody2 extends BodyComponent with KeyboardHandler, CollisionCall
       position: Vector2(0, 0),
       size: tamano,
     );
-    add(emberPlayer2); // Corrección de nombre aquí
+    add(emberPlayer2);
     return super.onLoad();
   }
 

@@ -60,6 +60,9 @@ class JuegoCarlos extends Forge2DGame with
     for(final gota in gotas!.objects){
       Gota spriteGota = Gota(position: Vector2(gota.x,gota.y),
           size: Vector2(64*wScale,64*hScale));
+
+      spriteGota.onBeginContact=InicioContactosDelJuego;
+
       add(spriteGota);
     }
 
@@ -86,36 +89,41 @@ class JuegoCarlos extends Forge2DGame with
       tamano: Vector2(50, 50),
       vidasComponent: vidasComponent, // Utiliza la variable de instancia
     );
+    _player.onBeginContact=InicioContactosDelJuego;
     add(_player);
 
 
     _player2 = EmberPlayerBody2(initialPosition: Vector2(170, canvasSize.y - 350,),
         tamano: Vector2(50,50), vidasComponent: vidasComponent, gameRef: this
     );
+    _player2.onBeginContact=InicioContactosDelJuego;
     add(_player2);
 
     gotaBoss = GotaBoss(position: Vector2(320, canvasSize.y - 180,), size: Vector2(90,90));
+    gotaBoss.onBeginContact = InicioContactosDelJuego;
     add(gotaBoss);
 
 
   }
 
-  /*void inicioContactoJuego(Object objeto, Contact contacto){
-
-    if(objeto is GotaBody){
-      print("gota tocada");
-    }else if{(objeto is TierraBody){
-      print("Tierra tocada");
-    }else if(objeto is EmberPlayerBody){
-      print("jugador tocado");
-    }
-
-    }
-  } */
-
   @override
   Color backgroundColor() {
     return Color(0xFFE7FFFF);
   }
+
+  void InicioContactosDelJuego(Object objeto, Contact contact) {
+    if (objeto is Gota || objeto is GotaBoss) {
+      // Llama a perderVida en vidasComponent
+      vidasComponent.perderVida();
+
+      // Verifica si el jugador se quedó sin vidas
+      if (vidasComponent.vidasRestantes == 0) {
+        // Eliminar ambos jugadores
+        _player.removeFromParent();
+        _player2.removeFromParent();
+      }
+    }
+  }
+
 
 }

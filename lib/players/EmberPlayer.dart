@@ -17,7 +17,6 @@ import 'EmberPlayer2.dart';
 class EmberPlayer extends SpriteAnimationComponent with HasGameRef<JuegoCarlos> {
 
   final VidasComponent vidasComponent;
-
   late EmberPlayerBody parentBody;
 
   EmberPlayer({
@@ -49,9 +48,11 @@ class EmberPlayer extends SpriteAnimationComponent with HasGameRef<JuegoCarlos> 
   }
 }
 
-class EmberPlayerBody extends BodyComponent with KeyboardHandler, CollisionCallbacks {
+class EmberPlayerBody extends BodyComponent with KeyboardHandler, ContactCallbacks, CollisionCallbacks {
   final Vector2 velocidad = Vector2.zero();
   final double aceleracion = 200;
+  int vidas = 5;
+  Vector2 initialPosition;
   final VidasComponent vidasComponent;
   final JuegoCarlos gameRef;
 
@@ -63,24 +64,37 @@ class EmberPlayerBody extends BodyComponent with KeyboardHandler, CollisionCallb
   late double jumpSpeed=0.0;
 
   EmberPlayerBody({
-    Vector2? initialPosition,required this.vidasComponent,required this.gameRef,
+    required this.initialPosition,required this.vidasComponent,required this.gameRef,
     required this.tamano})
-      : super(
-    fixtureDefs: [
-      FixtureDef( //el anclaje al mundo
-        CircleShape()..radius = tamano.x/2,
-        restitution: 0.8, //rebote
-        friction: 0.4,
-        //userData: this
-      ),
-    ],
-    bodyDef: BodyDef(
-      angularDamping: 0.8,
-      position: initialPosition ?? Vector2.zero(),
-      type: BodyType.dynamic,
-      fixedRotation: true,
-    ),
-  );
+      : super();
+
+  @override
+  Body createBody() {
+    BodyDef definicionCuerpo = BodyDef(
+        position: initialPosition,
+        type: BodyType.dynamic,
+        angularDamping: 0.8,
+        fixedRotation: true, // Esto evita que el cuerpo rote
+        userData: this
+    );
+
+    Body cuerpo = world.createBody(definicionCuerpo);
+
+    final shape = CircleShape();
+    shape.radius = tamano.x / 2;
+
+    FixtureDef fixtureDef = FixtureDef(
+        shape,
+        //density: 10.0,
+        friction: 0.2,
+        restitution: 0.5,
+        userData: this
+    );
+
+    cuerpo.createFixture(fixtureDef);
+
+    return cuerpo;
+  }
 
   void removeEmberPlayer() {
     emberPlayer.removeFromParent();
