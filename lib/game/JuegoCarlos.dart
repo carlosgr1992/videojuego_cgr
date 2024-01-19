@@ -121,9 +121,20 @@ class JuegoCarlos extends Forge2DGame with
         // Eliminar ambos jugadores
         _player.removeFromParent();
         _player2.removeFromParent();
+        mostrarGameOver();
       }
     }
   }
 
+  void mostrarGameOver() {
+    final gameOverText = TextComponent(
+      text: 'GAME OVER',
+      textRenderer: TextPaint(style: TextStyle(fontSize: 55.0, color: Colors.red)),
+    )..anchor = Anchor.center
+      ..x = size.x / 2
+      ..y = size.y / 2;
+
+    add(gameOverText);
+  }
 
 }
